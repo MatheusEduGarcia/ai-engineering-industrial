@@ -16,7 +16,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | 04 | Evaluate AI Systems | [Avaliando o sistema inteiro: um conjunto de avaliação sobre OEE](notebooks/04_avaliando_o_sistema_inteiro.ipynb) | done |
 | 05 | Prompt Engineering | [Engenharia de prompts: versionar, testar e atacar](notebooks/05_engenharia_de_prompts.ipynb) | done |
 | 06 | RAG and Agents | [RAG e agentes: manuais, ferramentas e o coletor de OEE](notebooks/06_rag_e_agentes.ipynb) | done |
-| 07 | Finetuning | memory math, quantization and LoRA on a small model, on CPU | next |
+| 07 | Finetuning | [Finetuning: quando ajustar, quanto custa, LoRA e quantização](notebooks/07_finetuning.ipynb) | done |
+| 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | next |
 | 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
 | 09 | Inference Optimization | latency, throughput and caching, measured | planned |
 | 10 | AI Engineering Architecture and User Feedback | guardrails, model router, operator feedback | planned |
@@ -101,6 +102,21 @@ A RAG built from scratch over synthetic maintenance manuals (every question carr
 | agent with a planner that errs 30 % of the time | 73 % of tasks right without argument validation, 95 % with it, at the cost of one extra step |
 
 The agent's protections are code, not prompt: permission checked in the tool, human approval for any tool that changes the world, a step limit, and a trace. The reader and the planner are **simulated**; retrieval, tools, protections and evaluation are real and model-agnostic. The notebook ends with a sketch for plugging in a real model, marked as untested.
+
+## Notebook 07 in one finding
+
+LoRA, quantization and the training-memory arithmetic, with a tiny numpy network and hand-written gradients (checked against numerical derivatives in the tests). The memory table uses real model sizes; the experiments use a small classifier, so the mechanism transfers and the numbers do not.
+
+| What was measured | Result |
+|---|---|
+| training memory, 7 B model | about 112 GB full finetuning, 14 GB LoRA, 4 GB QLoRA (rule of thumb of 16 bytes per parameter; activations come on top) |
+| 40 examples, new task whose training set shows only half of the synonyms | from scratch 82 %, full finetuning 88 %, head only 97 %, LoRA 97 % |
+| why full finetuning loses here | it moves the vectors of the seen words and breaks the structure that tied the unseen synonyms to them |
+| forgetting of the old task | full finetuning falls to 67 % down to 36 %; LoRA stays at 97 to 100 % with small learning rates, and switching the adapter off restores exactly 100 % |
+| LoRA delta | rank is capped at r, merging it into W gives identical outputs |
+| quantization | with one outlier weight, 4 bits per tensor falls to 8 % while 4 bits per group stays at 100 % |
+
+Coverage of the data mattered more than volume: with 320 examples, full finetuning stayed at 93 %. No real LLM was finetuned.
 
 ## Run it
 
