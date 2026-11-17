@@ -1,0 +1,6 @@
+numpy
+matplotlib>=3.8
+pytest>=8
+nbclient>=0.10
+nbformat>=5.10
+ipykernel>=6
