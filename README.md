@@ -6,20 +6,37 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 
 **This repository does not reproduce the book.** The text, figures and examples here are original; the book is the reading path, cited by chapter and section. Read the chapter, then run the notebook. If you do not have the book, the notebooks still stand on their own, but the book goes much deeper. [Get it from O'Reilly](https://www.oreilly.com/library/view/ai-engineering/9781098166298/).
 
+**Status: complete.** Ten chapters, ten executed notebooks, 54 tests, CI rebuilding every notebook on each push.
+
+## At a glance
+
+What the path shows, with numbers produced by the code in this repository:
+
+- **Structure is not correctness.** Constrained decoding gives 100 % valid JSON and 0 % correct records; plain rules give 99.5 % (ch. 2).
+- **Code first, model for the rest.** On an OEE question set with computed answers, rules plus a simulated assistant reach 90 % against 80 % for the assistant alone, at half the cost (ch. 4), and halve the wrong answers shown to operators (ch. 10).
+- **Defences belong in code.** Prompt injection succeeds 54 to 63 % of the time undefended and 0 % when the model only picks a tool call and code computes the value (ch. 5).
+- **Retrieval details decide RAG.** Fixed windows find 2 to 62 % of the evidence, paragraph chunks 100 % (ch. 6).
+- **LoRA protects what pretraining knew.** With 40 examples, LoRA reaches 97 % against 88 % for full finetuning, and switching the adapter off restores the old task exactly (ch. 7).
+- **Leakage lies.** With repeated reports, a random split reports 98 % for a true 91 % (ch. 8).
+- **Decoding is memory-bound.** Quantizing to 4 bits raises the decoding ceiling about 4x; the KV cache gives identical outputs about 20x faster at 300 tokens (ch. 9).
+- **Feedback is biased.** Thumbs up say 37 % approval for a true 81 % accuracy; a small random audit says 79 % (ch. 10).
+
+**What this repository is not:** no real language model is called or trained. Every model-like component (assistant, judge, reader, planner, operators) is a simulated stand-in with declared flaws, so each measurement can be checked against the truth. The method transfers; the numbers are hypotheses to re-measure with a real model and real, anonymized plant data.
+
 ## The path
 
-| # | Book chapter | Notebook | Status |
-|---|---|---|---|
-| 01 | Introduction to Building AI Applications with Foundation Models | [O que é engenharia de IA, construindo um modelo de linguagem do zero](notebooks/01_o_que_e_engenharia_de_ia.ipynb) | done |
-| 02 | Understanding Foundation Models | [Por dentro dos modelos: dados, tamanho, amostragem e saída estruturada](notebooks/02_por_dentro_dos_modelos.ipynb) | done |
-| 03 | Evaluation Methodology | [Como saber se está bom: perplexidade, avaliação exata, embeddings, IA como juiz, Elo](notebooks/03_como_saber_se_esta_bom.ipynb) | done |
-| 04 | Evaluate AI Systems | [Avaliando o sistema inteiro: um conjunto de avaliação sobre OEE](notebooks/04_avaliando_o_sistema_inteiro.ipynb) | done |
-| 05 | Prompt Engineering | [Engenharia de prompts: versionar, testar e atacar](notebooks/05_engenharia_de_prompts.ipynb) | done |
-| 06 | RAG and Agents | [RAG e agentes: manuais, ferramentas e o coletor de OEE](notebooks/06_rag_e_agentes.ipynb) | done |
-| 07 | Finetuning | [Finetuning: quando ajustar, quanto custa, LoRA e quantização](notebooks/07_finetuning.ipynb) | done |
-| 08 | Dataset Engineering | [Engenharia de dados: duplicatas, vazamento, rótulos ruins e dados sintéticos](notebooks/08_engenharia_de_dados.ipynb) | done |
-| 09 | Inference Optimization | [Inferência: latência, vazão, custo e onde está o gargalo](notebooks/09_inferencia.ipynb) | done |
-| 10 | AI Engineering Architecture and User Feedback | [O sistema inteiro: arquitetura, observabilidade e o ciclo de feedback](notebooks/10_o_sistema_inteiro.ipynb) | done |
+| # | Book chapter | Notebook |
+|---|---|---|
+| 01 | Introduction to Building AI Applications with Foundation Models | [O que é engenharia de IA, construindo um modelo de linguagem do zero](notebooks/01_o_que_e_engenharia_de_ia.ipynb) |
+| 02 | Understanding Foundation Models | [Por dentro dos modelos: dados, tamanho, amostragem e saída estruturada](notebooks/02_por_dentro_dos_modelos.ipynb) |
+| 03 | Evaluation Methodology | [Como saber se está bom: perplexidade, avaliação exata, embeddings, IA como juiz, Elo](notebooks/03_como_saber_se_esta_bom.ipynb) |
+| 04 | Evaluate AI Systems | [Avaliando o sistema inteiro: um conjunto de avaliação sobre OEE](notebooks/04_avaliando_o_sistema_inteiro.ipynb) |
+| 05 | Prompt Engineering | [Engenharia de prompts: versionar, testar e atacar](notebooks/05_engenharia_de_prompts.ipynb) |
+| 06 | RAG and Agents | [RAG e agentes: manuais, ferramentas e o coletor de OEE](notebooks/06_rag_e_agentes.ipynb) |
+| 07 | Finetuning | [Finetuning: quando ajustar, quanto custa, LoRA e quantização](notebooks/07_finetuning.ipynb) |
+| 08 | Dataset Engineering | [Engenharia de dados: duplicatas, vazamento, rótulos ruins e dados sintéticos](notebooks/08_engenharia_de_dados.ipynb) |
+| 09 | Inference Optimization | [Inferência: latência, vazão, custo e onde está o gargalo](notebooks/09_inferencia.ipynb) |
+| 10 | AI Engineering Architecture and User Feedback | [O sistema inteiro: arquitetura, observabilidade e o ciclo de feedback](notebooks/10_o_sistema_inteiro.ipynb) |
 
 ## How each notebook teaches
 
@@ -190,6 +207,6 @@ notebooks/             executed study notebooks
 
 ## Related
 
-[oee-monitor-lab](https://github.com/MatheusEduGarcia/oee-monitor-lab) · [industrial-ontology-lab](https://github.com/MatheusEduGarcia/industrial-ontology-lab) · [iiot-protocols-examples](https://github.com/MatheusEduGarcia/iiot-protocols-examples)
+[automation-portfolio](https://github.com/MatheusEduGarcia/automation-portfolio) · [oee-monitor-lab](https://github.com/MatheusEduGarcia/oee-monitor-lab) · [industrial-ontology-lab](https://github.com/MatheusEduGarcia/industrial-ontology-lab) · [iiot-protocols-examples](https://github.com/MatheusEduGarcia/iiot-protocols-examples)
 
 MIT license for the code and notebooks in this repository. The book is © 2025 Developer Experience Advisory LLC, published by O'Reilly Media.

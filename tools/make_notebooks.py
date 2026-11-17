@@ -2749,7 +2749,8 @@ for ln in (0, 0.1, 0.2, 0.3, 0.4):
         if fl: pr.append(len(fl & wrong) / len(fl))
         if wrong: rc.append(len(fl & wrong) / len(wrong))
     curva.append((ln, np.mean(acc), np.mean(accf)))
-    print(f"{ln:6.0%} {np.mean(acc):8.1%} {np.mean(accf):16.1%} {(np.mean(pr) if pr else float('nan')):21.0%} {(np.mean(rc) if rc else float('nan')):22.0%}")
+    fmt = lambda v: f"{np.mean(v):.0%}" if v else "-"
+    print(f"{ln:6.0%} {np.mean(acc):8.1%} {np.mean(accf):16.1%} {fmt(pr):>21s} {fmt(rc):>22s}")
 fig, ax = plt.subplots(figsize=(5, 3.2))
 ax.plot([c[0] for c in curva], [c[1] for c in curva], "o-", label="treinado com os rótulos como vieram"); ax.plot([c[0] for c in curva], [c[2] for c in curva], "o-", label="sem os marcados")
 ax.set_xlabel("proporção de rótulos errados"); ax.set_ylabel("acerto no teste limpo"); ax.legend(fontsize=7); plt.tight_layout()
