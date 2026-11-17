@@ -15,8 +15,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | 03 | Evaluation Methodology | [Como saber se está bom: perplexidade, avaliação exata, embeddings, IA como juiz, Elo](notebooks/03_como_saber_se_esta_bom.ipynb) | done |
 | 04 | Evaluate AI Systems | [Avaliando o sistema inteiro: um conjunto de avaliação sobre OEE](notebooks/04_avaliando_o_sistema_inteiro.ipynb) | done |
 | 05 | Prompt Engineering | [Engenharia de prompts: versionar, testar e atacar](notebooks/05_engenharia_de_prompts.ipynb) | done |
-| 06 | RAG and Agents | RAG over manuals; an agent whose tools query an OEE collector | next |
-| 07 | Finetuning | memory math, quantization and LoRA on a small model, on CPU | planned |
+| 06 | RAG and Agents | [RAG e agentes: manuais, ferramentas e o coletor de OEE](notebooks/06_rag_e_agentes.ipynb) | done |
+| 07 | Finetuning | memory math, quantization and LoRA on a small model, on CPU | next |
 | 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
 | 09 | Inference Optimization | latency, throughput and caching, measured | planned |
 | 10 | AI Engineering Architecture and User Feedback | guardrails, model router, operator feedback | planned |
@@ -87,6 +87,20 @@ Then the attack surface. An operator-notes field is untrusted text inside the pr
 | model only picks the tool call; code computes; notes never enter the prompt | 0 % by construction | permissions still need checking |
 
 **The model here is a simulator** with readable rules of how a model reacts to a prompt. The attack rates are assumptions; the method, the quality gate with an attack suite, and the architectural point (do not put untrusted text in the prompt, let code do the calculation) are what transfer. Chapter 6 swaps in a real model behind the same interface.
+
+## Notebook 06 in one finding
+
+A RAG built from scratch over synthetic maintenance manuals (every question carries the exact evidence sentence, so retrieval is scored without judging), then a tool-using agent over the OEE data.
+
+| What was measured | Result |
+|---|---|
+| fixed 20-word windows vs paragraph chunks | 2 to 62 % vs 100 % of evidence found: windows cut the sentence in half |
+| BM25 vs embeddings vs hybrid | BM25 wins; the hybrid does not beat it because the dense side is weaker |
+| symptom questions ("dripping" when the manual says "leaking") | 44 % at rank 1; expanding the query with the manual's glossary gives 94 %, but only after removing the glossary from the index (indexed, it hijacks the search and the score falls to 0 %) |
+| answer quality at k=1 | same 89 % with or without a "say not found" instruction, but invented answers drop from 7 % to 1 % |
+| agent with a planner that errs 30 % of the time | 73 % of tasks right without argument validation, 95 % with it, at the cost of one extra step |
+
+The agent's protections are code, not prompt: permission checked in the tool, human approval for any tool that changes the world, a step limit, and a trace. The reader and the planner are **simulated**; retrieval, tools, protections and evaluation are real and model-agnostic. The notebook ends with a sketch for plugging in a real model, marked as untested.
 
 ## Run it
 
