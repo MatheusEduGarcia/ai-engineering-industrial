@@ -12,9 +12,9 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 |---|---|---|---|
 | 01 | Introduction to Building AI Applications with Foundation Models | [O que é engenharia de IA, construindo um modelo de linguagem do zero](notebooks/01_o_que_e_engenharia_de_ia.ipynb) | done |
 | 02 | Understanding Foundation Models | [Por dentro dos modelos: dados, tamanho, amostragem e saída estruturada](notebooks/02_por_dentro_dos_modelos.ipynb) | done |
-| 03 | Evaluation Methodology | perplexity, exact evaluation, embeddings, AI as a judge, Elo, on maintenance text | done |
-| 04 | Evaluate AI Systems | an evaluation set of OEE questions with known answers | next |
-| 05 | Prompt Engineering | versioned, tested prompts and prompt injection on a shop-floor assistant | planned |
+| 03 | Evaluation Methodology | [Como saber se está bom: perplexidade, avaliação exata, embeddings, IA como juiz, Elo](notebooks/03_como_saber_se_esta_bom.ipynb) | done |
+| 04 | Evaluate AI Systems | [Avaliando o sistema inteiro: um conjunto de avaliação sobre OEE](notebooks/04_avaliando_o_sistema_inteiro.ipynb) | done |
+| 05 | Prompt Engineering | versioned, tested prompts and prompt injection on a shop-floor assistant | next |
 | 06 | RAG and Agents | RAG over manuals; an agent whose tools query an OEE collector | planned |
 | 07 | Finetuning | memory math, quantization and LoRA on a small model, on CPU | planned |
 | 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
@@ -59,6 +59,19 @@ How to measure a model, and when each measure lies. Perplexity on text the model
 | Elo from pairwise comparisons | needs hundreds of comparisons; human notes and best-of-3 cannot be separated with this judge |
 
 The AI judge in the notebook is simulated, with known biases, so the protocol for measuring a judge can be practised offline. Chapter 6 swaps in a real model.
+
+## Notebook 04 in one finding
+
+An evaluation set for an assistant that answers OEE questions, with gold answers computed by code from a synthetic plant (6 machines, 14 days, 3 shifts). Three answering systems with known flaws: exact rules, a plausible naive shortcut, and a simulated model-like assistant.
+
+| System | Overall | Traps (days with no data) | Cost per 1000 questions |
+|---|---|---|---|
+| rules | 55 % | 100 % | ~0 |
+| naive shortcut | 45 % | 32 % | ~0 |
+| simulated assistant | 80 % | 36 % | US$ 0.88 (illustrative) |
+| rules first, assistant only when rules refuse | **90 %** | 75 % | US$ 0.42 |
+
+The average hides what matters: the best overall system invents a number for two of every three questions about days that do not exist. Also in the notebook: why the naive average of shift OEEs is wrong by more than a point, how many questions separate two systems (50 to 100 for a 10 to 20 point gap, thousands for a point), duplicate questions inflating a memorizer from 12 % to 22 %, floors from trivial systems, and a quality gate that blocks a version that improves the average but keeps inventing data.
 
 ## Run it
 
