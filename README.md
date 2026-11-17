@@ -19,10 +19,7 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | 07 | Finetuning | [Finetuning: quando ajustar, quanto custa, LoRA e quantização](notebooks/07_finetuning.ipynb) | done |
 | 08 | Dataset Engineering | [Engenharia de dados: duplicatas, vazamento, rótulos ruins e dados sintéticos](notebooks/08_engenharia_de_dados.ipynb) | done |
 | 09 | Inference Optimization | [Inferência: latência, vazão, custo e onde está o gargalo](notebooks/09_inferencia.ipynb) | done |
-| 10 | Architecture and feedback | putting the system together and closing the loop with operators | next |
-| 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
-| 09 | Inference Optimization | latency, throughput and caching, measured | planned |
-| 10 | AI Engineering Architecture and User Feedback | guardrails, model router, operator feedback | planned |
+| 10 | AI Engineering Architecture and User Feedback | [O sistema inteiro: arquitetura, observabilidade e o ciclo de feedback](notebooks/10_o_sistema_inteiro.ipynb) | done |
 
 ## How each notebook teaches
 
@@ -147,6 +144,20 @@ Why decoding is memory-bound, a real numpy decoder with and without KV cache, si
 | response cache over 800 OEE questions | text similarity: 72 to 97 % hits but 63 to 92 % of them wrong; a structured key (parsed question) gives 62 % hits and 0 % wrong |
 | cost | same cost per token at equal utilization, but about US$ 1,440 a month fixed for a rented GPU against about US$ 48 for an edge box |
 
+## Notebook 10 in one finding
+
+The pieces of the earlier chapters assembled into one OEE question-answering system (cache, rules, assistant, guardrails, escalation to a person), with traces, simulated operator feedback of known bias, a regression gate and drift monitoring. The assistant, the costs and the operators are simulated.
+
+| What was measured | Result |
+|---|---|
+| what each component contributes | rules in front halve the wrong answers shown (7.7 % against 15.3 % without) and the cost; guardrails trade wrong answers for escalations; the cache cuts cost by about 40 % but replays wrong answers too |
+| thumbs up as accuracy | 37 % approval from thumbs against 81 % true accuracy (selection bias); a random audited sample of 100 gave 79 % (70 to 86 %) |
+| where the feedback points | the question type and phrasing that really fail; the cause was a parser that did not understand "3º dia", a code fix, not a model fix |
+| regression gate | v2 beats v1 in every slice with intervals above zero; a candidate with a cache key that forgot the machine scores 100 % when the cache is off and 67 % in the whole system |
+| drift | the share of questions outside the rules' vocabulary alarms in week 5, the true error in week 6, a 60-question audit in week 8, and operator feedback never |
+
+The notebook ends with a table of what each chapter left as a tool, and with what this path does not do: no real language model was called or trained, so the method transfers and the numbers are hypotheses.
+
 ## Run it
 
 ```bash
@@ -155,7 +166,7 @@ python -m pytest                      # the small models behind the notebooks
 python tools/make_notebooks.py        # rebuild and execute every notebook
 ```
 
-No GPU and no API key are needed for the early chapters. From chapter 2 on, notebooks that call a real model will default to a small local model and accept an API key as an option, with recorded responses so they still run in CI.
+No GPU, no model download and no API key are needed: everything runs on CPU with numpy. **No real language model is called or trained anywhere in this repository.** Where a chapter needs one (the assistant of chapter 4, the judge of chapter 3, the reader and planner of chapter 6, the operators of chapter 10), a simulated stand-in with known, declared flaws is used, so the measurements can be checked against the truth. The method transfers; the numbers are hypotheses to be measured again with a real model.
 
 ## Layout
 
@@ -165,6 +176,14 @@ aiind/tinylm.py        n-gram language model, perplexity, sampling, tokenizers (
 aiind/sampling.py      temperature, top-k, top-p, constrained decoding
 aiind/structured.py    stop note to JSON: schema, constrained decoding, rule baseline, verifier
 aiind/foundation.py    language mix, attention, parameter and memory math
+aiind/evaluation.py    entropy, perplexity, exact metrics, embeddings, simulated judge, Elo
+aiind/oeeqa.py         synthetic OEE data, questions with computed answers, rule and simulated systems
+aiind/prompting.py     versioned prompts, injection attacks, guardrails
+aiind/rag.py           chunking, BM25, dense and hybrid search, guarded agent
+aiind/finetune.py      small network with hand-written gradients, LoRA, quantization, memory math
+aiind/datasets.py      deduplication, leakage, label noise, synthetic data
+aiind/inference.py     KV cache, serving simulation, speculative decoding, caches, cost
+aiind/system.py        the assembled system, feedback, drift monitoring
 tools/make_notebooks.py  the notebooks as code, executed on build
 notebooks/             executed study notebooks
 ```
