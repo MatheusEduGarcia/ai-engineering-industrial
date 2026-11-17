@@ -14,8 +14,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | 02 | Understanding Foundation Models | [Por dentro dos modelos: dados, tamanho, amostragem e saída estruturada](notebooks/02_por_dentro_dos_modelos.ipynb) | done |
 | 03 | Evaluation Methodology | [Como saber se está bom: perplexidade, avaliação exata, embeddings, IA como juiz, Elo](notebooks/03_como_saber_se_esta_bom.ipynb) | done |
 | 04 | Evaluate AI Systems | [Avaliando o sistema inteiro: um conjunto de avaliação sobre OEE](notebooks/04_avaliando_o_sistema_inteiro.ipynb) | done |
-| 05 | Prompt Engineering | versioned, tested prompts and prompt injection on a shop-floor assistant | next |
-| 06 | RAG and Agents | RAG over manuals; an agent whose tools query an OEE collector | planned |
+| 05 | Prompt Engineering | [Engenharia de prompts: versionar, testar e atacar](notebooks/05_engenharia_de_prompts.ipynb) | done |
+| 06 | RAG and Agents | RAG over manuals; an agent whose tools query an OEE collector | next |
 | 07 | Finetuning | memory math, quantization and LoRA on a small model, on CPU | planned |
 | 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
 | 09 | Inference Optimization | latency, throughput and caching, measured | planned |
@@ -72,6 +72,21 @@ An evaluation set for an assistant that answers OEE questions, with gold answers
 | rules first, assistant only when rules refuse | **90 %** | 75 % | US$ 0.42 |
 
 The average hides what matters: the best overall system invents a number for two of every three questions about days that do not exist. Also in the notebook: why the naive average of shift OEEs is wrong by more than a point, how many questions separate two systems (50 to 100 for a 10 to 20 point gap, thousands for a point), duplicate questions inflating a memorizer from 12 % to 22 %, floors from trivial systems, and a quality gate that blocks a version that improves the average but keeps inventing data.
+
+## Notebook 05 in one finding
+
+Prompts as versioned, tested code, for the OEE assistant of notebook 04. Six versions, one change at a time, each measured on the evaluation set and fingerprinted by hash: format fixed by one instruction, traps by an explicit rule plus an example, multi-step questions by step-by-step reasoning. A single run is not enough: seeds move the score by 1 to 2 points, enough to fake an improvement.
+
+Then the attack surface. An operator-notes field is untrusted text inside the prompt, and six injected orders (force a number, fake authority, leak the instructions, plant a link, deny service, change role) work on the undefended prompt in 54 to 63 % of questions.
+
+| Defence | Attack success | What it does not cover |
+|---|---|---|
+| none | 54 to 63 % | |
+| mark the data as data | 9 to 13 % | still not zero |
+| + output guardrails (code) | 0 to 9 % | plausible wrong values, "I don't know" |
+| model only picks the tool call; code computes; notes never enter the prompt | 0 % by construction | permissions still need checking |
+
+**The model here is a simulator** with readable rules of how a model reacts to a prompt. The attack rates are assumptions; the method, the quality gate with an attack suite, and the architectural point (do not put untrusted text in the prompt, let code do the calculation) are what transfer. Chapter 6 swaps in a real model behind the same interface.
 
 ## Run it
 
