@@ -11,8 +11,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | # | Book chapter | Notebook | Status |
 |---|---|---|---|
 | 01 | Introduction to Building AI Applications with Foundation Models | [O que é engenharia de IA, construindo um modelo de linguagem do zero](notebooks/01_o_que_e_engenharia_de_ia.ipynb) | done |
-| 02 | Understanding Foundation Models | sampling, temperature and structured output: free-text stop note to JSON | next |
-| 03 | Evaluation Methodology | perplexity, embeddings and AI as a judge on maintenance text | planned |
+| 02 | Understanding Foundation Models | [Por dentro dos modelos: dados, tamanho, amostragem e saída estruturada](notebooks/02_por_dentro_dos_modelos.ipynb) | done |
+| 03 | Evaluation Methodology | perplexity, embeddings and AI as a judge on maintenance text | next |
 | 04 | Evaluate AI Systems | an evaluation set of OEE questions with known answers | planned |
 | 05 | Prompt Engineering | versioned, tested prompts and prompt injection on a shop-floor assistant | planned |
 | 06 | RAG and Agents | RAG over manuals; an agent whose tools query an OEE collector | planned |
@@ -33,6 +33,19 @@ Written in Portuguese, committed executed, in the same format as my other study 
 
 A language model built from nothing but counting, trained on 2,000 synthetic operator notes. With no context it hesitates among about 40 words at each step; with one word of context, about 4; with two, fewer still. Then tokens (characters, words, a 30-line BPE), temperature, and a scoring matrix for deciding which factory problems deserve generative AI.
 
+## Notebook 02 in one finding
+
+Turning a free-text stop note into JSON for the OEE system, three ways, with the same small model:
+
+| Strategy | Valid JSON | Correct record |
+|---|---|---|
+| ask and hope | 29 % | 0 % |
+| validate and retry (3x) | 67 % | 0 % |
+| constrained decoding | **100 %** | 0 % |
+| plain dictionary rules, no AI | 100 % | 99.5 % |
+
+Constrained decoding guarantees the format, never the content: **structure is not correctness**. Also in the notebook: why Portuguese costs about 2.5 times more tokens under an English-heavy tokenizer, attention in 15 lines of numpy, how much memory a model needs at each precision, top-k and top-p measured, and best-of-N with a domain verifier.
+
 ## Run it
 
 ```bash
@@ -48,6 +61,9 @@ No GPU and no API key are needed for the early chapters. From chapter 2 on, note
 ```
 aiind/corpus.py        synthetic shop-floor text (no real plant data)
 aiind/tinylm.py        n-gram language model, perplexity, sampling, tokenizers (chars, words, BPE)
+aiind/sampling.py      temperature, top-k, top-p, constrained decoding
+aiind/structured.py    stop note to JSON: schema, constrained decoding, rule baseline, verifier
+aiind/foundation.py    language mix, attention, parameter and memory math
 tools/make_notebooks.py  the notebooks as code, executed on build
 notebooks/             executed study notebooks
 ```
