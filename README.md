@@ -17,7 +17,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | 05 | Prompt Engineering | [Engenharia de prompts: versionar, testar e atacar](notebooks/05_engenharia_de_prompts.ipynb) | done |
 | 06 | RAG and Agents | [RAG e agentes: manuais, ferramentas e o coletor de OEE](notebooks/06_rag_e_agentes.ipynb) | done |
 | 07 | Finetuning | [Finetuning: quando ajustar, quanto custa, LoRA e quantização](notebooks/07_finetuning.ipynb) | done |
-| 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | next |
+| 08 | Dataset Engineering | [Engenharia de dados: duplicatas, vazamento, rótulos ruins e dados sintéticos](notebooks/08_engenharia_de_dados.ipynb) | done |
+| 09 | Inference Optimization | latency, throughput, cost, caching, batching, edge vs cloud | next |
 | 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
 | 09 | Inference Optimization | latency, throughput and caching, measured | planned |
 | 10 | AI Engineering Architecture and User Feedback | guardrails, model router, operator feedback | planned |
@@ -117,6 +118,20 @@ LoRA, quantization and the training-memory arithmetic, with a tiny numpy network
 | quantization | with one outlier weight, 4 bits per tensor falls to 8 % while 4 bits per group stays at 100 % |
 
 Coverage of the data mattered more than volume: with 320 examples, full finetuning stayed at 93 %. No real LLM was finetuned.
+
+## Notebook 08 in one finding
+
+Raw synthetic stop reports (duplicates, near duplicates, junk, typos, wrong labels, uneven coverage) turned into a trustworthy set, measuring each decision with a small naive Bayes classifier. No real plant data.
+
+| What was measured | Result |
+|---|---|
+| exact, normalized and near-duplicate removal | 512 records -> 453 -> 428 -> 398 (400 distinct reports); similarity threshold 0.8 balances merges (13 impure clusters) against misses (90 % of repeats caught) |
+| leakage with 100 % repeated reports | random split reports 98 % while the external truth is 91 %; a split by group reports 92 % |
+| wrong labels | 10 % noise costs about 4 points, 40 % costs over 20; cross-validated flagging points at the wrong labels with 74 to 85 % precision |
+| quality vs quantity | 30 clean examples match about 120 noisy ones (30 % wrong labels) |
+| synthetic data for coverage gaps | 75 % -> 97 % when it covers the missing synonyms, 92 % when faults are invented, and 80 % on words nobody listed |
+
+The cleaning rule that drops reports without a failure word also dropped 24 good ones with a typo in that very word, and the notebook says so. The classifier is simple on purpose: the subject is the data.
 
 ## Run it
 
