@@ -12,8 +12,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 |---|---|---|---|
 | 01 | Introduction to Building AI Applications with Foundation Models | [O que é engenharia de IA, construindo um modelo de linguagem do zero](notebooks/01_o_que_e_engenharia_de_ia.ipynb) | done |
 | 02 | Understanding Foundation Models | [Por dentro dos modelos: dados, tamanho, amostragem e saída estruturada](notebooks/02_por_dentro_dos_modelos.ipynb) | done |
-| 03 | Evaluation Methodology | perplexity, embeddings and AI as a judge on maintenance text | next |
-| 04 | Evaluate AI Systems | an evaluation set of OEE questions with known answers | planned |
+| 03 | Evaluation Methodology | perplexity, exact evaluation, embeddings, AI as a judge, Elo, on maintenance text | done |
+| 04 | Evaluate AI Systems | an evaluation set of OEE questions with known answers | next |
 | 05 | Prompt Engineering | versioned, tested prompts and prompt injection on a shop-floor assistant | planned |
 | 06 | RAG and Agents | RAG over manuals; an agent whose tools query an OEE collector | planned |
 | 07 | Finetuning | memory math, quantization and LoRA on a small model, on CPU | planned |
@@ -45,6 +45,20 @@ Turning a free-text stop note into JSON for the OEE system, three ways, with the
 | plain dictionary rules, no AI | 100 % | 99.5 % |
 
 Constrained decoding guarantees the format, never the content: **structure is not correctness**. Also in the notebook: why Portuguese costs about 2.5 times more tokens under an English-heavy tokenizer, attention in 15 lines of numpy, how much memory a model needs at each precision, top-k and top-p measured, and best-of-N with a domain verifier.
+
+## Notebook 03 in one finding
+
+How to measure a model, and when each measure lies. Perplexity on text the model has not seen: it falls with context on training data but rises again from order 4 on new text (overfitting), and it is only comparable across tokenizers as bits per character. A character model spends 0.42 bits per character on new notes, 2.9 on the same words shuffled and 6 on the English translation, which makes perplexity a cheap drift alarm.
+
+| Measure | What it caught |
+|---|---|
+| exact record match | 0 % for the small model, 100 % for rules; category accuracy is the metric the OEE actually consumes |
+| word overlap vs embeddings (AUC, same fault told differently) | 0.69 vs 0.94, but embeddings rate "seal without leak" almost equal to "seal leaking" |
+| simulated AI judge | picks the right summary 88 % of the time when it comes first and 56 % when second; asking in both orders trades coverage for precision |
+| best-of-N, same verifier for choosing and scoring | 100 % by the verifier, 91 % by an independent check (Goodhart) |
+| Elo from pairwise comparisons | needs hundreds of comparisons; human notes and best-of-3 cannot be separated with this judge |
+
+The AI judge in the notebook is simulated, with known biases, so the protocol for measuring a judge can be practised offline. Chapter 6 swaps in a real model.
 
 ## Run it
 
