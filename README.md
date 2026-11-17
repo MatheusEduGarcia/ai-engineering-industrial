@@ -18,7 +18,8 @@ A study path through *AI Engineering: Building Applications with Foundation Mode
 | 06 | RAG and Agents | [RAG e agentes: manuais, ferramentas e o coletor de OEE](notebooks/06_rag_e_agentes.ipynb) | done |
 | 07 | Finetuning | [Finetuning: quando ajustar, quanto custa, LoRA e quantização](notebooks/07_finetuning.ipynb) | done |
 | 08 | Dataset Engineering | [Engenharia de dados: duplicatas, vazamento, rótulos ruins e dados sintéticos](notebooks/08_engenharia_de_dados.ipynb) | done |
-| 09 | Inference Optimization | latency, throughput, cost, caching, batching, edge vs cloud | next |
+| 09 | Inference Optimization | [Inferência: latência, vazão, custo e onde está o gargalo](notebooks/09_inferencia.ipynb) | done |
+| 10 | Architecture and feedback | putting the system together and closing the loop with operators | next |
 | 08 | Dataset Engineering | deduplicating, cleaning and synthesizing stop reports | planned |
 | 09 | Inference Optimization | latency, throughput and caching, measured | planned |
 | 10 | AI Engineering Architecture and User Feedback | guardrails, model router, operator feedback | planned |
@@ -132,6 +133,19 @@ Raw synthetic stop reports (duplicates, near duplicates, junk, typos, wrong labe
 | synthetic data for coverage gaps | 75 % -> 97 % when it covers the missing synonyms, 92 % when faults are invented, and 80 % on words nobody listed |
 
 The cleaning rule that drops reports without a failure word also dropped 24 good ones with a typo in that very word, and the notebook says so. The classifier is simple on purpose: the subject is the data.
+
+## Notebook 09 in one finding
+
+Why decoding is memory-bound, a real numpy decoder with and without KV cache, simulated batching, speculative decoding checked for exactness, response caches and an edge vs cloud cost model. Hardware and price figures are illustrative; the serving queue is a simulation with assumed step times.
+
+| What was measured | Result |
+|---|---|
+| KV cache | identical outputs; 3x faster at 50 generated tokens and about 20x at 300 (time grows with the square of the length without it) |
+| KV cache memory, 7 B model | 0.5 MB per token; 32 users at 4000 tokens need 67 GB, more than the 14 GB of weights (GQA cuts it 4x) |
+| batching policies, simulated | one at a time saturates at about 130 tokens/s; continuous batching reaches about 880 tokens/s with p95 near 4 s up to 6 requests per second |
+| speculative decoding | distance to the target distribution is at the noise level; 3 to 4x with a good draft (acceptance 0.86), a loss with a bad or costly one |
+| response cache over 800 OEE questions | text similarity: 72 to 97 % hits but 63 to 92 % of them wrong; a structured key (parsed question) gives 62 % hits and 0 % wrong |
+| cost | same cost per token at equal utilization, but about US$ 1,440 a month fixed for a rented GPU against about US$ 48 for an edge box |
 
 ## Run it
 
